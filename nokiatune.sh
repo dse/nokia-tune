@@ -32,6 +32,6 @@ sox $tmpdir/*.wav nokiatune.wav
 sox $tmpdir/*.wav nokiatune.mp3
 
 ffmpeg -i nokiatune.wav nokiatune.m4a
-mv nokiatune.m4a nokiatune.m4r
+cp nokiatune.m4a nokiatune.m4r
 
 /bin/rm -f -r $tmpdir
