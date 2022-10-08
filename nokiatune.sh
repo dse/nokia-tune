@@ -2,9 +2,11 @@
 #
 # I'll make this easier eventually.
 
+ffmpeg="ffmpeg -y -loglevel fatal"
+
 # type is one of sine, square, triangle, sawtooth, trapezium, exp,
 # [white]noise, tpdfnoise, pinknoise, brownnoise, pluck; default=sine.
-type=exp
+type=sawtooth
 gain=0
 
 typex=""
@@ -49,15 +51,26 @@ sox -q -n $tmpdir/13.wav synth $threequarters $type A5  gain "${gain}"
 sox -q -n $tmpdir/14.wav synth $remainder     $type A5  gain -1000
 
 dir="sounds"
-basename="nokiatune${typex}${gainx}"
-
+rm -f -r "${dir}"
 mkdir -p "${dir}"
 
-sox $tmpdir/*.wav "${dir}/${basename}".wav
+sawtoothwav="${dir}/nokiatune${typex}${gainx}.wav"
+sawtoothoutwav="${dir}/nokiatune${typex}${gainx}.out.wav"
+wav="${dir}/nokiatune${gainx}.wav"
+mp3="${dir}/nokiatune${gainx}.mp3"
+m4a="${dir}/nokiatune${gainx}.m4a"
+m4r="${dir}/nokiatune${gainx}.m4r"
+flac="${dir}/nokiatune${gainx}.flac"
 
-ffmpeg -y -i "${dir}/${basename}".wav "${dir}/${basename}".mp3
-ffmpeg -y -i "${dir}/${basename}".wav "${dir}/${basename}".m4a
-ffmpeg -y -i "${dir}/${basename}".wav "${dir}/${basename}".flac
-cp "${dir}/${basename}".m4a "${dir}/${basename}".m4r
+set -x
+
+sox $tmpdir/*.wav "${sawtoothwav}"
+src/wave "${sawtoothwav}"
+mv "${sawtoothoutwav}" "${wav}"
+
+$ffmpeg -i "${wav}" "${mp3}"
+$ffmpeg -i "${wav}" "${m4a}"
+$ffmpeg -i "${wav}" "${flac}"
+cp "${m4a}" "${m4r}"
 
 /bin/rm -f -r $tmpdir
